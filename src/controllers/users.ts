@@ -33,7 +33,7 @@ export const signin = (req: Request, res: Response, next: NextFunction) => {
   User.findUserByCredentials(req.body.email, req.body.password)
     .then( (user) => {
       const token = jwt.sign({ _id: user._id }, settings.JWT_SECRET, { expiresIn: '7d' });
-      res.cookie('jwt',token, {
+      res.cookie('jwt', token, {
         maxAge: 604800,
         httpOnly: true,
         path: '/',
