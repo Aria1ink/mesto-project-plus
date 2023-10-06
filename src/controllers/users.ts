@@ -66,7 +66,7 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
     .catch(next);
 }
 
-export const getCurrentUser = (req: RequestAuth, res: Response, next: NextFunction) => {
+export const getCurrentUser = (req: Request, res: Response, next: NextFunction) => {
   User.findById(req.user._id)
     .then( user => {
       if (!user) {

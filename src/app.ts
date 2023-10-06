@@ -10,7 +10,6 @@ export const settings: Settings = {
 };
 
 const result = require('dotenv').config({processEnv: settings});
-
 if (result.error || settings.JWT_SECRET === '') {
   console.log('Missing JWT_SECRET in .env file. Temporary secret key generated.');
   settings.JWT_SECRET = crypto.randomBytes(16).toString('hex');
@@ -18,6 +17,7 @@ if (result.error || settings.JWT_SECRET === '') {
 
 const app = express();
 const cookieParser = require('cookie-parser');
+const { errors } = require('celebrate');
 
 mongoose.set("strictQuery", false);
 mongoose.connect("mongodb://localhost:27017/mestodb");
@@ -27,6 +27,7 @@ app.use(cookieParser());
 
 
 app.use(errorLogger);
+app.use(errors());
 app.use(catchErrors);
 
 app.listen(3000);

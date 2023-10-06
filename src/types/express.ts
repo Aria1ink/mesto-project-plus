@@ -1,13 +1,11 @@
 import { JwtPayload } from "jsonwebtoken";
 import { Request } from "express";
 
-export interface RequestAuth extends Request {
-  user: {
-    _id: string | JwtPayload;
-  };
+export interface RequestAuth {
+  _id: string | JwtPayload;
 }
-export interface RequestData extends Request {
+export interface RequestData {
   body: {
-    [key: string]: any;
+    [key: string]: string;
   };
 }
