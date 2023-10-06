@@ -2,9 +2,14 @@ import { NextFunction, Response } from "express";
 import { RequestAuth } from "types/express";
 import { WrongAuthError } from "constants/errors";
 import jwt from 'jsonwebtoken';
+import { settings } from "app";
 
 export const needAuth = (req: RequestAuth, res: Response, next: NextFunction) => {
-  const { authorization } = req.headers;
+  let authorization = req.cookies.jwt;
+
+  if (!authorization) {
+    authorization = req.headers?.authorization;
+  }
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
     throw new WrongAuthError('Auth required');
@@ -12,8 +17,9 @@ export const needAuth = (req: RequestAuth, res: Response, next: NextFunction) =>
 
   const token = authorization.replace("Bearer ", "");
   let payload;
+
   try {
-    payload = jwt.verify(token, 'some-secret-key');
+    payload = jwt.verify(token, settings.JWT_SECRET);
   } catch (err) {
     throw new WrongAuthError('Auth required');
   }

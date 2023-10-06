@@ -4,18 +4,25 @@ import catchErrors from "middlewares/catchErrors";
 import crypto from 'crypto';
 import { Settings } from "./types/settings";
 
-export const settings: Settings = {};
+export const settings: Settings = {
+  JWT_SECRET: '',
+};
 
 const result = require('dotenv').config({processEnv: settings});
 
-if (result.error) {
-  console.log('Missing .env file. Temporary secret key generated.');
+if (result.error || settings.JWT_SECRET === '') {
+  console.log('Missing JWT_SECRET in .env file. Temporary secret key generated.');
   settings.JWT_SECRET = crypto.randomBytes(16).toString('hex');
 }
 
 const app = express();
+const cookieParser = require('cookie-parser');
+
 mongoose.set("strictQuery", false);
 mongoose.connect("mongodb://localhost:27017/mestodb");
+
+app.use(cookieParser());
+
 
 app.use(catchErrors);
 

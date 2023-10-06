@@ -4,6 +4,7 @@ import { WrongDataError, ServerError, NotFoundError, WrongAuthError } from "cons
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { RequestAuth } from "types/express";
+import { settings } from "app";
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(req.body.password, 10)
@@ -31,8 +32,12 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
 export const signin = (req: Request, res: Response, next: NextFunction) => {
   User.findUserByCredentials(req.body.email, req.body.password)
     .then( (user) => {
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
-      res.send({ token });
+      const token = jwt.sign({ _id: user._id }, settings.JWT_SECRET, { expiresIn: '7d' });
+      res.cookie('jwt',token, {
+        maxAge: 604800,
+        httpOnly: true,
+        path: '/',
+      });
     })
     .catch(next);
 }

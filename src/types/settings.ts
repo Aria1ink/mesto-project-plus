@@ -1,3 +1,3 @@
 export interface Settings {
-  JWT_SECRET?: string;
+  JWT_SECRET: string;
 }
