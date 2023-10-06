@@ -1,8 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
+import { RequestAuth } from "types/express";
 import { WrongAuthError } from "constants/errors";
 import jwt from 'jsonwebtoken';
 
-export const needAuth = (req: Request, res: Response, next: NextFunction) => {
+export const needAuth = (req: RequestAuth, res: Response, next: NextFunction) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -17,7 +18,7 @@ export const needAuth = (req: Request, res: Response, next: NextFunction) => {
     throw new WrongAuthError('Auth required');
   }
 
-  req.user = payload;
+  req.user = {_id: payload};
 
   next();
 }
