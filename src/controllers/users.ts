@@ -1,6 +1,6 @@
 import User from "../models/user";
 import bcrypt from "bcryptjs";
-import { WrongDataError, ServerError, NotFoundError } from "constants/errors";
+import { ServerError, NotFoundError, UserExistsError } from "constants/errors";
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { settings } from "app";
@@ -17,7 +17,7 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
         })
         .then((user) => {
           if (!user) {
-            throw new WrongDataError('User already exists');
+            throw new UserExistsError('User already exists');
           } else {
             res.send(user);
           }

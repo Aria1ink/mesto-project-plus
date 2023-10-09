@@ -25,6 +25,15 @@ export class NotFoundError extends Error {
   }
 }
 
+export class UserExistsError extends Error {
+  statusCode: number;
+
+  constructor(message: string) {
+    super(message);
+    this.statusCode = 409;
+  }
+}
+
 export class ServerError extends Error {
   statusCode: number;
 
