@@ -4,6 +4,9 @@ import catchErrors from "middlewares/catchErrors";
 import crypto from 'crypto';
 import { Settings } from "./types/settings";
 import { requestLogger, errorLogger } from './middlewares/logger';
+import { needAuth } from "middlewares/auth";
+import routerUsers from "./routes/users";
+import routerAuth from "./routes/auth";
 
 export const settings: Settings = {
   JWT_SECRET: '',
@@ -25,6 +28,9 @@ mongoose.connect("mongodb://localhost:27017/mestodb");
 app.use(requestLogger);
 app.use(cookieParser());
 
+app.use("/", routerAuth);
+app.use(needAuth);
+app.use("/", routerUsers);
 
 app.use(errorLogger);
 app.use(errors());

@@ -3,7 +3,6 @@ import bcrypt from "bcryptjs";
 import { WrongDataError, ServerError, NotFoundError, WrongAuthError } from "constants/errors";
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { RequestAuth } from "types/express";
 import { settings } from "app";
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
@@ -78,7 +77,7 @@ export const getCurrentUser = (req: Request, res: Response, next: NextFunction) 
     .catch(next);
 }
 
-export const updateProfile = (req: RequestAuth, res: Response, next: NextFunction) => {
+export const updateProfile = (req: Request, res: Response, next: NextFunction) => {
   User.findByIdAndUpdate(
     req.user._id,
     {
@@ -97,7 +96,7 @@ export const updateProfile = (req: RequestAuth, res: Response, next: NextFunctio
     .catch(next);
 }
 
-export const updateAvatar = (req: RequestAuth, res: Response, next: NextFunction) => {
+export const updateAvatar = (req: Request, res: Response, next: NextFunction) => {
   User.findByIdAndUpdate(
     req.user._id,
     {

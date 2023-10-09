@@ -1,10 +1,9 @@
-import { NextFunction, Response } from "express";
-import { RequestAuth } from "types/express";
+import { NextFunction, Response, Request } from "express";
 import { WrongAuthError } from "constants/errors";
 import jwt from 'jsonwebtoken';
 import { settings } from "app";
 
-export const needAuth = (req: RequestAuth, res: Response, next: NextFunction) => {
+export  const needAuth = (req: Request, res: Response, next: NextFunction) => {
   let authorization = req.cookies.jwt;
 
   if (!authorization) {
