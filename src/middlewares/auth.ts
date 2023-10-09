@@ -3,7 +3,7 @@ import { WrongAuthError } from "constants/errors";
 import jwt from 'jsonwebtoken';
 import { settings } from "app";
 
-export  const needAuth = (req: Request, res: Response, next: NextFunction) => {
+export const needAuth = (req: Request, res: Response, next: NextFunction) => {
   let authorization = req.cookies.jwt;
 
   if (!authorization) {
@@ -24,6 +24,12 @@ export  const needAuth = (req: Request, res: Response, next: NextFunction) => {
   }
 
   req.user = {_id: payload};
+
+  next();
+}
+
+export const isAuth = (req: Request, res: Response, next: NextFunction) => {
+
 
   next();
 }

@@ -1,6 +1,6 @@
 import User from "../models/user";
 import bcrypt from "bcryptjs";
-import { WrongDataError, ServerError, NotFoundError, WrongAuthError } from "constants/errors";
+import { WrongDataError, ServerError, NotFoundError } from "constants/errors";
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { settings } from "app";
