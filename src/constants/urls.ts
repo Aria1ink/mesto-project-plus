@@ -8,4 +8,3 @@ export const urlCardLikes = urlCards + '/likes';
 export const urlCardSetLike = urlCards + '/likes/:cardId';
 export const urlSignin = '/signin';
 export const urlSignup = '/signup';
-export const urlSignout = '/signout';

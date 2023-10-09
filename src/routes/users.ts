@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { celebrate, Joi } from "celebrate";
 import { urlUsers, urlUserId, urlUserSelf, urlUserAvatar } from "constants/urls";
-import { getAllUsers, getCurrentUser, getUserById, signin, signup, updateAvatar, updateProfile } from "controllers/users";
+import { getAllUsers, getCurrentUser, getUserById, updateAvatar, updateProfile } from "controllers/users";
 
 const router = Router();
 

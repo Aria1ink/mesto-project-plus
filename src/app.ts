@@ -7,6 +7,7 @@ import { requestLogger, errorLogger } from './middlewares/logger';
 import { needAuth } from "middlewares/auth";
 import routerUsers from "./routes/users";
 import routerAuth from "./routes/auth";
+import routerCards from "./routes/cards";
 
 export const settings: Settings = {
   JWT_SECRET: '',
@@ -31,6 +32,7 @@ app.use(cookieParser());
 app.use("/", routerAuth);
 app.use(needAuth);
 app.use("/", routerUsers);
+app.use("/", routerCards);
 
 app.use(errorLogger);
 app.use(errors());
