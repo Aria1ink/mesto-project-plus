@@ -1,7 +1,7 @@
-import { Router } from "express";
-import { celebrate, Joi } from "celebrate";
-import { urlCardLikes, urlCards, urlCardSetLike } from "constants/urls";
-import { createCard, getCards, removeCard, removeLike, setLike } from "controllers/cards";
+import { Router } from 'express';
+import { celebrate, Joi } from 'celebrate';
+import { urlCardLikes, urlCards, urlCardSetLike } from '../constants/urls';
+import { createCard, getCards, removeCard, removeLike, setLike } from '../controllers/cards';
 
 const router = Router();
 
@@ -15,7 +15,7 @@ router.post(
       link: Joi.string().uri().required(),
     }),
   }),
-  createCard
+  createCard,
 );
 
 router.delete(urlCards, removeCard);

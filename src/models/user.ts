@@ -1,7 +1,7 @@
-import { WrongAuthError } from "constants/errors";
-import mongoose, { Model } from "mongoose";
+import mongoose, { Model } from 'mongoose';
 import validator from 'validator';
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs';
+import { WrongAuthError } from '../constants/errors';
 
 interface User {
   name: string;
@@ -11,7 +11,7 @@ interface User {
   password: string;
 }
 interface UserModel extends Model<User> {
-  findUserByCredentials(email: string, password: string): Promise<any>
+  findUserByCredentials(email: string, password: string): Promise<any>;
 }
 
 const userSchema = new mongoose.Schema<User, UserModel>(
@@ -52,26 +52,23 @@ const userSchema = new mongoose.Schema<User, UserModel>(
       select: false,
     },
   },
-  { versionKey: false }
+  { versionKey: false },
 );
 
-userSchema.static('findUserByCredentials',  function findUserByCredentials(email: string, password: string) {
-  return this.findOne({ email }).select("+password")
-    .then( (user) => {
+userSchema.static('findUserByCredentials', function findUserByCredentials(email: string, password: string) {
+  return this.findOne({ email }).select('+password')
+    .then((user) => {
       if (!user) {
-        return Promise.reject (new WrongAuthError('Wrong login or password'));
+        return Promise.reject(new WrongAuthError('Wrong login or password'));
       }
       return bcrypt.compare(password, user.password)
-        .then( (result) => {
+        .then((result) => {
           if (!result) {
-            return Promise.reject (new WrongAuthError('Wrong login or password'));
-          } else {
-            return user;
+            return Promise.reject(new WrongAuthError('Wrong login or password'));
           }
-        })
-    })
+          return user;
+        });
+    });
 });
-
-
 
 export default mongoose.model<User, UserModel>('user', userSchema);

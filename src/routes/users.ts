@@ -1,7 +1,11 @@
-import { Router } from "express";
-import { celebrate, Joi } from "celebrate";
-import { urlUsers, urlUserId, urlUserSelf, urlUserAvatar } from "constants/urls";
-import { getAllUsers, getCurrentUser, getUserById, updateAvatar, updateProfile } from "controllers/users";
+import { Router } from 'express';
+import { celebrate, Joi } from 'celebrate';
+import {
+  urlUsers, urlUserId, urlUserSelf, urlUserAvatar
+} from '../constants/urls';
+import {
+  getAllUsers, getCurrentUser, getUserById, updateAvatar, updateProfile
+} from '../controllers/users';
 
 const router = Router();
 
@@ -16,11 +20,13 @@ router.patch(
   celebrate({
   body: Joi.object()
     .keys({
-      avatar: Joi.string().uri()
+      avatar: Joi.string().uri(),
     })
       .unknown(true)
       .required(),
-}), updateAvatar);
+  }),
+  updateAvatar,
+);
 
 router.patch(
   urlUsers,
@@ -28,8 +34,9 @@ router.patch(
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30).required(),
     about: Joi.string().min(2).max(200).required(),
-  })
-    .unknown(true),
-}), updateProfile);
+  }).unknown(true),
+  }),
+  updateProfile,
+);
 
 export default router;

@@ -1,7 +1,7 @@
-import { NextFunction, Response, Request } from "express";
-import { WrongAuthError } from "constants/errors";
+import { NextFunction, Response, Request } from 'express';
 import jwt from 'jsonwebtoken';
-import { settings } from "app";
+import { WrongAuthError } from '../constants/errors';
+import { settings } from '../app';
 
 export const needAuth = (req: Request, res: Response, next: NextFunction) => {
   let authorization = req.cookies.jwt;
@@ -10,11 +10,11 @@ export const needAuth = (req: Request, res: Response, next: NextFunction) => {
     authorization = req.headers?.authorization;
   }
 
-  if (!authorization || !authorization.startsWith("Bearer ")) {
+  if (!authorization || !authorization.startsWith('Bearer ')) {
     throw new WrongAuthError('Auth required');
   }
 
-  const token = authorization.replace("Bearer ", "");
+  const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
@@ -23,13 +23,7 @@ export const needAuth = (req: Request, res: Response, next: NextFunction) => {
     throw new WrongAuthError('Auth required');
   }
 
-  req.user = {_id: payload};
+  req.user = { _id: payload };
 
   next();
-}
-
-export const isAuth = (req: Request, res: Response, next: NextFunction) => {
-
-
-  next();
-}
+};

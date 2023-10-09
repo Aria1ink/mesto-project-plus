@@ -1,10 +1,10 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from 'express';
 
 interface ErrorWithStatus extends Error {
   statusCode: number;
 }
 
-export default function catchErrors(err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) {
+export default function catchErrors(err: ErrorWithStatus, req: Request, res: Response) {
   const { statusCode = 500, message } = err;
 
   res
@@ -12,6 +12,6 @@ export default function catchErrors(err: ErrorWithStatus, req: Request, res: Res
     .send({
       message: statusCode === 500
         ? 'Internal server error'
-        : message
-      });
-  };
+        : message,
+    });
+}

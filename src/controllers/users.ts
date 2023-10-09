@@ -1,28 +1,28 @@
-import User from "../models/user";
-import bcrypt from "bcryptjs";
-import { ServerError, NotFoundError, UserExistsError } from "constants/errors";
+import bcrypt from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { settings } from "app";
+import { ServerError, NotFoundError, UserExistsError } from '../constants/errors';
+import { settings } from '../app';
+import User from '../models/user';
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(req.body.password, 10)
-    .then( hash => {
-        User.create({
-          name: req.body.name,
-          about: req.body.about,
-          avatar: req.body.avatar,
-          email: req.body.email,
-          password: hash,
-        })
-        .then((user) => {
-          if (!user) {
-            throw new UserExistsError('User already exists');
-          } else {
-            res.send(user);
-          }
-        })
-        .catch(next);
+    .then((hash) => {
+      User.create({
+        name: req.body.name,
+        about: req.body.about,
+        avatar: req.body.avatar,
+        email: req.body.email,
+        password: hash,
+      })
+      .then((user) => {
+        if (!user) {
+          throw new UserExistsError('User already exists');
+        } else {
+          res.send(user);
+        }
+      })
+      .catch(next);
       }
     )
     .catch(err => next(new ServerError(err)));
@@ -86,7 +86,7 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
     },
     { returnDocument: 'after'},
   )
-    .then( user => {
+    .then((user) => {
       if (!user) {
         throw new NotFoundError('User not found');
       } else {
@@ -94,7 +94,7 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
       }
     })
     .catch(next);
-}
+};
 
 export const updateAvatar = (req: Request, res: Response, next: NextFunction) => {
   User.findByIdAndUpdate(
@@ -102,9 +102,9 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
     {
       avatar: req.body.avatar,
     },
-    { returnDocument: 'after'},
+    { returnDocument: 'after' },
   )
-    .then( user => {
+    .then((user) => {
       if (!user) {
         throw new NotFoundError('User not found');
       } else {
@@ -112,4 +112,4 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
       }
     })
     .catch(next);
-}
+};
