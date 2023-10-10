@@ -6,6 +6,7 @@ import { Settings } from './types/settings';
 import { requestLogger, errorLogger } from './middlewares/logger';
 // eslint-disable-next-line import/no-cycle
 import routerUsers from './routes/users';
+// eslint-disable-next-line import/no-cycle
 import routerAuth from './routes/auth';
 import routerCards from './routes/cards';
 
@@ -31,7 +32,6 @@ app.use(requestLogger);
 app.use(cookieParser());
 
 app.use('/', routerAuth);
-
 app.use('/', routerUsers);
 app.use('/', routerCards);
 
