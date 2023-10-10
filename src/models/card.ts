@@ -45,4 +45,4 @@ export const cardSchema = new mongoose.Schema<Card>(
   { versionKey: false },
 );
 
-export default mongoose.model<Card>('user', cardSchema);
+export default mongoose.model<Card>('card', cardSchema);
