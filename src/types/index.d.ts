@@ -1,15 +1,12 @@
-/* eslint-disable */
-// не нужен тут  экспорт
-import { JwtPayload } from 'jsonwebtoken';
-import { Request } from 'express';
+export {};
 
+/* eslint-disable */
 declare global {
   namespace Express {
     interface Request {
       user: {
-        _id: string | JwtPayload;
+        _id: string;
       };
     }
-  }
+    }
 }
-/* eslint-enable */

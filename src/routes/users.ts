@@ -6,6 +6,7 @@ import {
   urlUserSelf,
   urlUserAvatar,
 } from '../constants/urls';
+// eslint-disable-next-line import/no-cycle
 import {
   getAllUsers,
   getCurrentUser,

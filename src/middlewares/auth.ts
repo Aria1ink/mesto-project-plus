@@ -1,6 +1,7 @@
 import { NextFunction, Response, Request } from 'express';
 import jwt from 'jsonwebtoken';
 import WrongAuthError from '../constants/errors/WrongAuthError';
+// eslint-disable-next-line import/no-cycle
 import settings from '../app';
 
 const needAuth = (req: Request, res: Response, next: NextFunction) => {
@@ -23,7 +24,7 @@ const needAuth = (req: Request, res: Response, next: NextFunction) => {
     throw new WrongAuthError('Auth required');
   }
 
-  req.user = { _id: payload };
+  req.user = { _id: payload as string };
 
   next();
 };

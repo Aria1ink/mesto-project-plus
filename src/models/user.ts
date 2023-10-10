@@ -12,12 +12,10 @@ interface User {
   _id: mongoose.Types.ObjectId;
 }
 
-/* eslint-disable */
-//Это интерфейс, в нем не должны использоваться указанные переменные
 interface UserModel extends Model<User> {
+  // eslint-disable-next-line no-unused-vars
   findUserByCredentials: (email: string, password: string) => Promise<User>;
 }
-/* eslint-enable */
 
 const userSchema = new mongoose.Schema<User, UserModel>(
   {

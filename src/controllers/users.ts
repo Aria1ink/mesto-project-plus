@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import ServerError from '../constants/errors/ServerError';
 import NotFoundError from '../constants/errors/NotFoundError';
 import UserExistsError from '../constants/errors/UserExistsError';
+// eslint-disable-next-line import/no-cycle
 import settings from '../app';
 import User from '../models/user';
 
