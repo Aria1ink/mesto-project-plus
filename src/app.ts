@@ -3,9 +3,7 @@ import mongoose from 'mongoose';
 import crypto from 'crypto';
 import catchErrors from './middlewares/catchErrors';
 import { requestLogger, errorLogger } from './middlewares/logger';
-import routerUsers from './routes/users';
-import routerAuth from './routes/auth';
-import routerCards from './routes/cards';
+import router from './routes/index';
 import { settings } from './constants/settings';
 
 const result = require('dotenv').config({ processEnv: settings });
@@ -25,9 +23,7 @@ mongoose.connect('mongodb://localhost:27017/mestodb');
 app.use(requestLogger);
 app.use(cookieParser());
 
-app.use('/', routerAuth);
-app.use('/', routerUsers);
-app.use('/', routerCards);
+app.use('/', router);
 
 app.use(errorLogger);
 app.use(errors());
