@@ -1,10 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 interface ErrorWithStatus extends Error {
   statusCode: number;
 }
 
-export default function catchErrors(err: ErrorWithStatus, req: Request, res: Response) {
+// eslint-disable-next-line no-unused-vars, max-len
+export default function catchErrors(err: ErrorWithStatus, req: Request, res: Response, next: NextFunction) {
   const { statusCode = 500, message } = err;
 
   res

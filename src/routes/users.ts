@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
+// eslint-disable-next-line import/no-cycle
+import needAuth from '../middlewares/auth';
 import {
   urlUsers,
   urlUserId,
@@ -17,33 +19,39 @@ import {
 
 const routerUsers = Router();
 
-routerUsers.get(urlUsers, getAllUsers);
+routerUsers.get(urlUsers, needAuth, getAllUsers);
 
-routerUsers.get(urlUserSelf, getCurrentUser);
+routerUsers.get(urlUserSelf, needAuth, getCurrentUser);
 
-routerUsers.get(urlUserId, getUserById);
+routerUsers.get(urlUserId, needAuth, getUserById);
 
 routerUsers.patch(
   urlUserAvatar,
-  celebrate({
-    body: Joi.object()
-      .keys({
-        avatar: Joi.string().uri(),
-      })
-      .unknown(true)
-      .required(),
-  }),
+  [
+    needAuth,
+    celebrate({
+      body: Joi.object()
+        .keys({
+          avatar: Joi.string().uri(),
+        })
+        .unknown(true)
+        .required(),
+    }),
+  ],
   updateAvatar,
 );
 
 routerUsers.patch(
   urlUsers,
-  celebrate({
-    body: Joi.object().keys({
-      name: Joi.string().min(2).max(30).required(),
-      about: Joi.string().min(2).max(200).required(),
-    }).unknown(true),
-  }),
+  [
+    needAuth,
+    celebrate({
+      body: Joi.object().keys({
+        name: Joi.string().min(2).max(30).required(),
+        about: Joi.string().min(2).max(200).required(),
+      }).unknown(true),
+    }),
+  ],
   updateProfile,
 );
 

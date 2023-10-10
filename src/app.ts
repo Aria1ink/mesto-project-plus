@@ -2,8 +2,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import crypto from 'crypto';
 import catchErrors from './middlewares/catchErrors';
-// eslint-disable-next-line import/no-cycle
-import needAuth from './middlewares/auth';
 import { Settings } from './types/settings';
 import { requestLogger, errorLogger } from './middlewares/logger';
 // eslint-disable-next-line import/no-cycle
@@ -33,7 +31,7 @@ app.use(requestLogger);
 app.use(cookieParser());
 
 app.use('/', routerAuth);
-app.use(needAuth);
+
 app.use('/', routerUsers);
 app.use('/', routerCards);
 
