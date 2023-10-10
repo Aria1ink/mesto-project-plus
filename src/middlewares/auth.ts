@@ -1,9 +1,9 @@
 import { NextFunction, Response, Request } from 'express';
 import jwt from 'jsonwebtoken';
-import { WrongAuthError } from '../constants/errors';
-import { settings } from '../app';
+import WrongAuthError from '../constants/errors/WrongAuthError';
+import settings from '../app';
 
-export const needAuth = (req: Request, res: Response, next: NextFunction) => {
+const needAuth = (req: Request, res: Response, next: NextFunction) => {
   let authorization = req.cookies.jwt;
 
   if (!authorization) {
@@ -27,3 +27,5 @@ export const needAuth = (req: Request, res: Response, next: NextFunction) => {
 
   next();
 };
+
+export default needAuth;

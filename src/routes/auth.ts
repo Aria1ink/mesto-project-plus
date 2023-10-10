@@ -3,9 +3,9 @@ import { celebrate, Joi } from 'celebrate';
 import { urlSignin, urlSignup } from '../constants/urls';
 import { signin, signup } from '../controllers/users';
 
-const router = Router();
+const routerAuth = Router();
 
-router.post(
+routerAuth.post(
   urlSignin,
   celebrate({
     body: Joi.object().keys({
@@ -16,7 +16,7 @@ router.post(
   signin,
 );
 
-router.post(
+routerAuth.post(
   urlSignup,
   celebrate({
     body: Joi.object().keys({
@@ -34,4 +34,4 @@ router.post(
   signup,
 );
 
-export default router;
+export default routerAuth;

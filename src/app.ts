@@ -1,15 +1,15 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import catchErrors from './middlewares/catchErrors';
-import { needAuth } from './middlewares/auth';
 import crypto from 'crypto';
+import catchErrors from './middlewares/catchErrors';
+import needAuth from './middlewares/auth';
 import { Settings } from './types/settings';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import routerUsers from './routes/users';
 import routerAuth from './routes/auth';
 import routerCards from './routes/cards';
 
-export const settings: Settings = {
+const settings: Settings = {
   JWT_SECRET: '',
 };
 
@@ -40,3 +40,5 @@ app.use(errors());
 app.use(catchErrors);
 
 app.listen(3000);
+
+export default settings;

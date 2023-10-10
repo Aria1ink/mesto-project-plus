@@ -1,42 +1,49 @@
 import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
 import {
-  urlUsers, urlUserId, urlUserSelf, urlUserAvatar
+  urlUsers,
+  urlUserId,
+  urlUserSelf,
+  urlUserAvatar,
 } from '../constants/urls';
 import {
-  getAllUsers, getCurrentUser, getUserById, updateAvatar, updateProfile
+  getAllUsers,
+  getCurrentUser,
+  getUserById,
+  updateAvatar,
+  updateProfile,
 } from '../controllers/users';
 
-const router = Router();
+const routerUsers = Router();
 
-router.get(urlUsers, getAllUsers);
+routerUsers.get(urlUsers, getAllUsers);
 
-router.get(urlUserSelf, getCurrentUser);
+routerUsers.get(urlUserSelf, getCurrentUser);
 
-router.get(urlUserId, getUserById);
+routerUsers.get(urlUserId, getUserById);
 
-router.patch(
+routerUsers.patch(
   urlUserAvatar,
   celebrate({
-  body: Joi.object()
-    .keys({
-      avatar: Joi.string().uri(),
-    })
+    body: Joi.object()
+      .keys({
+        avatar: Joi.string().uri(),
+      })
       .unknown(true)
       .required(),
   }),
   updateAvatar,
 );
 
-router.patch(
+routerUsers.patch(
   urlUsers,
   celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30).required(),
-    about: Joi.string().min(2).max(200).required(),
-  }).unknown(true),
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30).required(),
+      about: Joi.string().min(2).max(200).required(),
+    }).unknown(true),
   }),
   updateProfile,
 );
 
-export default router;
+export default routerUsers;

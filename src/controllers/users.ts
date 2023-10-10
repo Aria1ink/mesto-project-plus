@@ -1,8 +1,10 @@
 import bcrypt from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { ServerError, NotFoundError, UserExistsError } from '../constants/errors';
-import { settings } from '../app';
+import ServerError from '../constants/errors/ServerError';
+import NotFoundError from '../constants/errors/NotFoundError';
+import UserExistsError from '../constants/errors/UserExistsError';
+import settings from '../app';
 import User from '../models/user';
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
@@ -15,22 +17,21 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
         email: req.body.email,
         password: hash,
       })
-      .then((user) => {
-        if (!user) {
-          throw new UserExistsError('User already exists');
-        } else {
-          res.send(user);
-        }
-      })
-      .catch(next);
-      }
-    )
-    .catch(err => next(new ServerError(err)));
-}
+        .then((user) => {
+          if (!user) {
+            throw new UserExistsError('User already exists');
+          } else {
+            res.send(user);
+          }
+        })
+        .catch(next);
+    })
+    .catch((err) => next(new ServerError(err)));
+};
 
 export const signin = (req: Request, res: Response, next: NextFunction) => {
   User.findUserByCredentials(req.body.email, req.body.password)
-    .then( (user) => {
+    .then((user) => {
       const token = jwt.sign({ _id: user._id }, settings.JWT_SECRET, { expiresIn: '7d' });
       res.cookie('jwt', token, {
         maxAge: 604800,
@@ -39,11 +40,11 @@ export const signin = (req: Request, res: Response, next: NextFunction) => {
       });
     })
     .catch(next);
-}
+};
 
 export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
   User.find()
-    .then( users => {
+    .then((users) => {
       if (!users || users.length === 0) {
         throw new NotFoundError('Users not found');
       } else {
@@ -51,11 +52,11 @@ export const getAllUsers = (req: Request, res: Response, next: NextFunction) => 
       }
     })
     .catch(next);
-}
+};
 
 export const getUserById = (req: Request, res: Response, next: NextFunction) => {
   User.findById(req.params.userId)
-    .then( user => {
+    .then((user) => {
       if (!user) {
         throw new NotFoundError('User not found');
       } else {
@@ -63,11 +64,11 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
       }
     })
     .catch(next);
-}
+};
 
 export const getCurrentUser = (req: Request, res: Response, next: NextFunction) => {
   User.findById(req.user._id)
-    .then( user => {
+    .then((user) => {
       if (!user) {
         throw new NotFoundError('User not found');
       } else {
@@ -75,7 +76,7 @@ export const getCurrentUser = (req: Request, res: Response, next: NextFunction) 
       }
     })
     .catch(next);
-}
+};
 
 export const updateProfile = (req: Request, res: Response, next: NextFunction) => {
   User.findByIdAndUpdate(
@@ -84,7 +85,7 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
       name: req.body.name,
       about: req.body.about,
     },
-    { returnDocument: 'after'},
+    { returnDocument: 'after' },
   )
     .then((user) => {
       if (!user) {

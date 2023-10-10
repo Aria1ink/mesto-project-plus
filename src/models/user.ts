@@ -1,7 +1,7 @@
 import mongoose, { Model } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-import { WrongAuthError } from '../constants/errors';
+import WrongAuthError from '../constants/errors/WrongAuthError';
 
 interface User {
   name: string;
@@ -9,10 +9,15 @@ interface User {
   avatar: string;
   email: string;
   password: string;
+  _id: mongoose.Types.ObjectId;
 }
+
+/* eslint-disable */
+//Это интерфейс, в нем не должны использоваться указанные переменные
 interface UserModel extends Model<User> {
-  findUserByCredentials(email: string, password: string): Promise<any>;
+  findUserByCredentials: (email: string, password: string) => Promise<User>;
 }
+/* eslint-enable */
 
 const userSchema = new mongoose.Schema<User, UserModel>(
   {

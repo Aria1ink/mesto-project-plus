@@ -1,13 +1,19 @@
 import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
 import { urlCardLikes, urlCards, urlCardSetLike } from '../constants/urls';
-import { createCard, getCards, removeCard, removeLike, setLike } from '../controllers/cards';
+import {
+  createCard,
+  getCards,
+  removeCard,
+  removeLike,
+  setLike,
+} from '../controllers/cards';
 
-const router = Router();
+const routerCards = Router();
 
-router.get(urlCards, getCards);
+routerCards.get(urlCards, getCards);
 
-router.post(
+routerCards.post(
   urlCards,
   celebrate({
     body: Joi.object().keys({
@@ -18,10 +24,10 @@ router.post(
   createCard,
 );
 
-router.delete(urlCards, removeCard);
+routerCards.delete(urlCards, removeCard);
 
-router.delete(urlCardLikes, removeLike);
+routerCards.delete(urlCardLikes, removeLike);
 
-router.put(urlCardSetLike, setLike);
+routerCards.put(urlCardSetLike, setLike);
 
-export default router;
+export default routerCards;

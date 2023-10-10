@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
-import { NotFoundError, WrongAuthError } from '../constants/errors';
+import NotFoundError from '../constants/errors/NotFoundError';
+import WrongAuthError from '../constants/errors/WrongAuthError';
 import Card from '../models/card';
 
 export const getCards = (req: Request, res: Response, next: NextFunction) => {
@@ -53,7 +54,7 @@ export const setLike = (req: Request, res: Response, next: NextFunction) => {
     { new: true },
   )
     .populate(['owner', 'likes'])
-    .then((card) =>{
+    .then((card) => {
       res.send(card);
     })
     .catch(() => {
@@ -68,7 +69,7 @@ export const removeLike = (req: Request, res: Response, next: NextFunction) => {
     { new: true },
   )
     .populate(['owner', 'likes'])
-    .then((card) =>{
+    .then((card) => {
       res.send(card);
     })
     .catch(() => {
