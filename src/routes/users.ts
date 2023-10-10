@@ -17,11 +17,11 @@ import {
 
 const routerUsers = Router();
 
-routerUsers.get(urlUsers, needAuth, getAllUsers);
-
 routerUsers.get(urlUserSelf, needAuth, getCurrentUser);
 
 routerUsers.get(urlUserId, needAuth, getUserById);
+
+routerUsers.get(urlUsers, needAuth, getAllUsers);
 
 routerUsers.patch(
   urlUserAvatar,

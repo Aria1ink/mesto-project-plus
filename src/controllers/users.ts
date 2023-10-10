@@ -18,10 +18,15 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
         password: hash,
       })
         .then((user) => {
-          res.send(user);
+          res.send(user.toObject({ useProjection: true }));
+        })
+        .catch(() => {
+          next(new UserExistsError('User already exists'));
         });
     })
-    .catch(() => next(new UserExistsError('User already exists')));
+    .catch((err) => {
+      next(new ServerError(err.message));
+    });
 };
 
 export const signin = (req: Request, res: Response, next: NextFunction) => {
@@ -33,6 +38,7 @@ export const signin = (req: Request, res: Response, next: NextFunction) => {
         httpOnly: true,
         path: '/',
       });
+      res.send(user.toObject({ useProjection: true }));
     })
     .catch(next);
 };
@@ -46,19 +52,31 @@ export const getAllUsers = (req: Request, res: Response, next: NextFunction) => 
 };
 
 export const getUserById = (req: Request, res: Response, next: NextFunction) => {
-  User.findById(req.params.userId)
+  User.findById(req.params.userId).orFail(new NotFoundError('User not found'))
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => next(new ServerError(err.message)));
+    .catch((err) => {
+      if (err.statusCode) {
+        next(err);
+      } else {
+        next(new NotFoundError('User not found'));
+      }
+    });
 };
 
 export const getCurrentUser = (req: Request, res: Response, next: NextFunction) => {
-  User.findById(req.user._id)
+  User.findById(req.user._id).orFail(new NotFoundError('User not found'))
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => next(new ServerError(err.message)));
+    .catch((err) => {
+      if (err.statusCode) {
+        next(err);
+      } else {
+        next(new NotFoundError('User not found'));
+      }
+    });
 };
 
 export const updateProfile = (req: Request, res: Response, next: NextFunction) => {
@@ -68,12 +86,21 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
       name: req.body.name,
       about: req.body.about,
     },
-    { returnDocument: 'after' },
+    {
+      returnDocument: 'after',
+      runValidators: true,
+    },
   ).orFail(new NotFoundError('User not found'))
     .then((user) => {
       res.send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.statusCode) {
+        next(err);
+      } else {
+        next(new NotFoundError('User not found'));
+      }
+    });
 };
 
 export const updateAvatar = (req: Request, res: Response, next: NextFunction) => {
@@ -82,10 +109,19 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
     {
       avatar: req.body.avatar,
     },
-    { returnDocument: 'after' },
+    {
+      returnDocument: 'after',
+      runValidators: true,
+    },
   ).orFail(new NotFoundError('User not found'))
     .then((user) => {
       res.send(user);
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.statusCode) {
+        next(err);
+      } else {
+        next(new NotFoundError('User not found'));
+      }
+    });
 };

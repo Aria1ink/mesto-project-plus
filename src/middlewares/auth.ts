@@ -10,7 +10,7 @@ const needAuth = (req: Request, res: Response, next: NextFunction) => {
     authorization = req.headers?.authorization;
   }
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  if (!authorization && !authorization.startsWith('Bearer ')) {
     throw new WrongAuthError('Auth required');
   }
 

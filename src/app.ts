@@ -21,6 +21,9 @@ mongoose.set('strictQuery', false);
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
 app.use(requestLogger);
+
+app.use(express.json());
+
 app.use(cookieParser());
 
 app.use('/', router);
