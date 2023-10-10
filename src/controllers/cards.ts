@@ -18,8 +18,6 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
     name: req.body.name,
     link: req.body.link,
     owner: req.user._id,
-    likes: [],
-    createdAt: new Date().toUTCString(),
   })
     .then((card) => {
       card.populate(['owner', 'likes'])
@@ -37,13 +35,13 @@ export const removeCard = (req: Request, res: Response, next: NextFunction) => {
   Card.findOneAndDelete({ _id: req.params.cardId, owner: { id } })
     .then((result) => {
       if (!result) {
-        next(new WrongAuthError('Access denied'));
+        next(new NotFoundError('Card not found'));
       } else {
         res.send({ message: 'Card deleted' });
       }
     })
     .catch(() => {
-      next(new WrongAuthError('Access denied'));
+      next(new NotFoundError('Card not found'));
     });
 };
 

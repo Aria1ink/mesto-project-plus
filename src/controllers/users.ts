@@ -1,11 +1,11 @@
 import bcrypt from 'bcryptjs';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import ServerError from '../constants/errors/ServerError';
 import NotFoundError from '../constants/errors/NotFoundError';
 import UserExistsError from '../constants/errors/UserExistsError';
-import settings from '../app';
+import { settings } from '../constants/settings';
 import User from '../models/user';
+import ServerError from '../constants/errors/ServerError';
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(req.body.password, 10)
@@ -18,15 +18,10 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
         password: hash,
       })
         .then((user) => {
-          if (!user) {
-            throw new UserExistsError('User already exists');
-          } else {
-            res.send(user);
-          }
-        })
-        .catch(next);
+          res.send(user);
+        });
     })
-    .catch((err) => next(new ServerError(err)));
+    .catch(() => next(new UserExistsError('User already exists')));
 };
 
 export const signin = (req: Request, res: Response, next: NextFunction) => {
@@ -45,37 +40,25 @@ export const signin = (req: Request, res: Response, next: NextFunction) => {
 export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
   User.find()
     .then((users) => {
-      if (!users || users.length === 0) {
-        throw new NotFoundError('Users not found');
-      } else {
-        res.send(...users);
-      }
+      res.send([...users]);
     })
-    .catch(next);
+    .catch((err) => next(new ServerError(err.message)));
 };
 
 export const getUserById = (req: Request, res: Response, next: NextFunction) => {
   User.findById(req.params.userId)
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError('User not found');
-      } else {
-        res.send(user);
-      }
+      res.send(user);
     })
-    .catch(next);
+    .catch((err) => next(new ServerError(err.message)));
 };
 
 export const getCurrentUser = (req: Request, res: Response, next: NextFunction) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError('User not found');
-      } else {
-        res.send(user);
-      }
+      res.send(user);
     })
-    .catch(next);
+    .catch((err) => next(new ServerError(err.message)));
 };
 
 export const updateProfile = (req: Request, res: Response, next: NextFunction) => {
@@ -86,13 +69,9 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
       about: req.body.about,
     },
     { returnDocument: 'after' },
-  )
+  ).orFail(new NotFoundError('User not found'))
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError('User not found');
-      } else {
-        res.send(user);
-      }
+      res.send(user);
     })
     .catch(next);
 };
@@ -104,13 +83,9 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
       avatar: req.body.avatar,
     },
     { returnDocument: 'after' },
-  )
+  ).orFail(new NotFoundError('User not found'))
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError('User not found');
-      } else {
-        res.send(user);
-      }
+      res.send(user);
     })
     .catch(next);
 };

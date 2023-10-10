@@ -2,15 +2,11 @@ import express from 'express';
 import mongoose from 'mongoose';
 import crypto from 'crypto';
 import catchErrors from './middlewares/catchErrors';
-import { Settings } from './types/settings';
 import { requestLogger, errorLogger } from './middlewares/logger';
 import routerUsers from './routes/users';
 import routerAuth from './routes/auth';
 import routerCards from './routes/cards';
-
-const settings: Settings = {
-  JWT_SECRET: '',
-};
+import { settings } from './constants/settings';
 
 const result = require('dotenv').config({ processEnv: settings });
 
@@ -38,5 +34,3 @@ app.use(errors());
 app.use(catchErrors);
 
 app.listen(3000);
-
-export default settings;

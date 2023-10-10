@@ -58,18 +58,13 @@ const userSchema = new mongoose.Schema<User, UserModel>(
 );
 
 userSchema.static('findUserByCredentials', function findUserByCredentials(email: string, password: string) {
-  return this.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
+  return this.findOne({ email }).select('+password').orFail(new WrongAuthError('Wrong login or password'))
+    .then(async (user) => {
+      const result = await bcrypt.compare(password, user.password);
+      if (!result) {
         return Promise.reject(new WrongAuthError('Wrong login or password'));
       }
-      return bcrypt.compare(password, user.password)
-        .then((result) => {
-          if (!result) {
-            return Promise.reject(new WrongAuthError('Wrong login or password'));
-          }
-          return user;
-        });
+      return user;
     });
 });
 

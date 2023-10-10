@@ -38,7 +38,6 @@
               "ts": "never"
           }
       ],
-      "import/no-cycle": "ignoreExternal",
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [1, { "vars": "all", "argsIgnorePattern": "next" }],
       "import/prefer-default-export": "off"
