@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
-// eslint-disable-next-line import/no-cycle
 import needAuth from '../middlewares/auth';
 import {
   urlUsers,
@@ -8,7 +7,6 @@ import {
   urlUserSelf,
   urlUserAvatar,
 } from '../constants/urls';
-// eslint-disable-next-line import/no-cycle
 import {
   getAllUsers,
   getCurrentUser,

@@ -12,8 +12,8 @@ interface User {
 }
 
 interface UserModel extends Model<User> {
-  // eslint-disable-next-line no-unused-vars, max-len
-  findUserByCredentials: (email: string, password: string) => Promise<mongoose.Document<unknown, any, User>>;
+  findUserByCredentials: (email: string, password: string) =>
+    Promise<mongoose.Document<unknown, any, User>>;
 }
 
 const userSchema = new mongoose.Schema<User, UserModel>(

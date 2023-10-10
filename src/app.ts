@@ -4,9 +4,7 @@ import crypto from 'crypto';
 import catchErrors from './middlewares/catchErrors';
 import { Settings } from './types/settings';
 import { requestLogger, errorLogger } from './middlewares/logger';
-// eslint-disable-next-line import/no-cycle
 import routerUsers from './routes/users';
-// eslint-disable-next-line import/no-cycle
 import routerAuth from './routes/auth';
 import routerCards from './routes/cards';
 

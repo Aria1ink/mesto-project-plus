@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
-// eslint-disable-next-line import/no-cycle
 import needAuth from '../middlewares/auth';
 import { urlCardLikes, urlCards, urlCardSetLike } from '../constants/urls';
 import {

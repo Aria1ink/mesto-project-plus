@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import { celebrate, Joi } from 'celebrate';
 import { urlSignin, urlSignup } from '../constants/urls';
-// eslint-disable-next-line import/no-cycle
 import { signin, signup } from '../controllers/users';
 
 const routerAuth = Router();

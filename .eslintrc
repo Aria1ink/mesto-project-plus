@@ -37,13 +37,17 @@
               "js": "never",
               "ts": "never"
           }
-      ]
+      ],
+      "import/no-cycle": "ignoreExternal",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [1, { "vars": "all", "argsIgnorePattern": "next" }],
+      "import/prefer-default-export": "off"
   },
   "overrides": [
     {
       "files": ["*.js","*.ts"],
       "rules": {
-        "no-underscore-dangle": ["error", { "allow": ["_id"] }]
+        "no-underscore-dangle": ["error", { "allow": ["_id"] }],
       }
     }
   ],
