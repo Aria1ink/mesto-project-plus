@@ -6,6 +6,7 @@ import UserExistsError from '../constants/errors/UserExistsError';
 import { settings } from '../constants/settings';
 import User from '../models/user';
 import ServerError from '../constants/errors/ServerError';
+import WrongDataError from '../constants/errors/WrongDataError';
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(req.body.password, 10)
@@ -20,8 +21,14 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
         .then((user) => {
           res.send(user.toObject({ useProjection: true }));
         })
-        .catch(() => {
-          next(new UserExistsError('User already exists'));
+        .catch((err) => {
+          if (err._message) {
+            next(new WrongDataError(err._message));
+          } else if (err?.code === 11000) {
+            next(new UserExistsError('User already exists'));
+          } else {
+            next(new ServerError(err.message));
+          }
         });
     })
     .catch((err) => {
@@ -57,10 +64,12 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
       res.send(user);
     })
     .catch((err) => {
-      if (err.statusCode) {
+      if (err.statusCode === 404) {
         next(err);
-      } else {
+      } else if (err.message && ~err.message.indexOf('Cast to ObjectId failed')) {
         next(new NotFoundError('User not found'));
+      } else {
+        next(new ServerError(err.message));
       }
     });
 };

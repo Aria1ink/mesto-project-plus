@@ -3,6 +3,7 @@ import NotFoundError from '../constants/errors/NotFoundError';
 import WrongAuthError from '../constants/errors/WrongAuthError';
 import Card from '../models/card';
 import ServerError from '../constants/errors/ServerError';
+import WrongDataError from '../constants/errors/WrongDataError';
 
 export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find({}).limit(50).populate(['owner', 'likes'])
@@ -22,10 +23,17 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
       card.populate(['owner', 'likes'])
         .then((result) => {
           res.send(result);
+        })
+        .catch(() => {
+          next(new ServerError('Failed to create card'));
         });
     })
-    .catch(() => {
-      next(new WrongAuthError('Access denied'));
+    .catch((err) => {
+      if (err._message) {
+        next(new WrongDataError(err._message));
+      } else {
+        next(new ServerError('Failed to create card'));
+      }
     });
 };
 
@@ -56,10 +64,12 @@ export const setLike = (req: Request, res: Response, next: NextFunction) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.statusCode) {
+      if (err.statusCode === 404) {
         next(err);
-      } else {
+      } else if (err.message && ~err.message.indexOf('Cast to ObjectId failed')) {
         next(new NotFoundError('Card not found'));
+      } else {
+        next(new ServerError(err.message));
       }
     });
 };
@@ -75,10 +85,12 @@ export const removeLike = (req: Request, res: Response, next: NextFunction) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.statusCode) {
+      if (err.statusCode === 404) {
         next(err);
-      } else {
+      } else if (err.message && ~err.message.indexOf('Cast to ObjectId failed')) {
         next(new NotFoundError('Card not found'));
+      } else {
+        next(new ServerError(err.message));
       }
     });
 };
