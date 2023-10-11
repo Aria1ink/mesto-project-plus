@@ -19,15 +19,7 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
     link: req.body.link,
     owner: req.user._id,
   })
-    .then((card) => {
-      card.populate(['owner', 'likes'])
-        .then((result) => {
-          res.send(result);
-        })
-        .catch(() => {
-          next(new ServerError('Failed to create card'));
-        });
-    })
+    .then((card) => card.populate(['owner', 'likes']).then((result) => { res.send(result); }))
     .catch((err) => {
       if (err._message) {
         next(new WrongDataError(err._message));
