@@ -24,7 +24,7 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
       if (err._message) {
         next(new WrongDataError(err._message));
       } else {
-        next(new ServerError('Failed to create card'));
+        next(new ServerError(err.message));
       }
     });
 };
