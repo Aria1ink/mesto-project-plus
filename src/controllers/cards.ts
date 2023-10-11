@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import NotFoundError from '../constants/errors/NotFoundError';
-import WrongAuthError from '../constants/errors/WrongAuthError';
 import Card from '../models/card';
 import ServerError from '../constants/errors/ServerError';
 import WrongDataError from '../constants/errors/WrongDataError';
+import { isCastError } from '../tools/checkErrors';
 
 export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find({}).limit(50).populate(['owner', 'likes'])
@@ -45,10 +45,12 @@ export const removeCard = (req: Request, res: Response, next: NextFunction) => {
       res.send({ message: 'Card deleted' });
     })
     .catch((err) => {
-      if (err.statusCode) {
+      if (err.statusCode === 404) {
         next(err);
-      } else {
+      } else if (isCastError(err)) {
         next(new NotFoundError('Card not found'));
+      } else {
+        next(new ServerError('err.message'));
       }
     });
 };
@@ -66,7 +68,7 @@ export const setLike = (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
-      } else if (err.message && ~err.message.indexOf('Cast to ObjectId failed')) {
+      } else if (isCastError(err)) {
         next(new NotFoundError('Card not found'));
       } else {
         next(new ServerError(err.message));
@@ -87,7 +89,7 @@ export const removeLike = (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
-      } else if (err.message && ~err.message.indexOf('Cast to ObjectId failed')) {
+      } else if (isCastError(err)) {
         next(new NotFoundError('Card not found'));
       } else {
         next(new ServerError(err.message));

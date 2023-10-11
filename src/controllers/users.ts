@@ -7,6 +7,7 @@ import { settings } from '../constants/settings';
 import User from '../models/user';
 import ServerError from '../constants/errors/ServerError';
 import WrongDataError from '../constants/errors/WrongDataError';
+import { isCastError } from '../tools/checkErrors';
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(req.body.password, 10)
@@ -66,7 +67,7 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
-      } else if (err.message && ~err.message.indexOf('Cast to ObjectId failed')) {
+      } else if (isCastError(err)) {
         next(new NotFoundError('User not found'));
       } else {
         next(new ServerError(err.message));
@@ -80,10 +81,10 @@ export const getCurrentUser = (req: Request, res: Response, next: NextFunction) 
       res.send(user);
     })
     .catch((err) => {
-      if (err.statusCode) {
+      if (err.statusCode === 404) {
         next(err);
       } else {
-        next(new NotFoundError('User not found'));
+        next(new ServerError(err.message));
       }
     });
 };
@@ -104,10 +105,10 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
       res.send(user);
     })
     .catch((err) => {
-      if (err.statusCode) {
+      if (err.statusCode === 404) {
         next(err);
       } else {
-        next(new NotFoundError('User not found'));
+        next(new ServerError(err.message));
       }
     });
 };
@@ -127,10 +128,10 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
       res.send(user);
     })
     .catch((err) => {
-      if (err.statusCode) {
+      if (err.statusCode === 404) {
         next(err);
       } else {
-        next(new NotFoundError('User not found'));
+        next(new ServerError(err.message));
       }
     });
 };
