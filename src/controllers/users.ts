@@ -7,7 +7,8 @@ import { settings } from '../constants/settings';
 import User from '../models/user';
 import ServerError from '../constants/errors/ServerError';
 import WrongDataError from '../constants/errors/WrongDataError';
-import { isCastError } from '../tools/checkErrors';
+import { isCastError, isValidationError } from '../tools/checkErrors';
+import WrongAuthError from '../constants/errors/WrongAuthError';
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(req.body.password, 10)
@@ -23,8 +24,8 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
           res.send(user.toObject({ useProjection: true }));
         })
         .catch((err) => {
-          if (err._message) {
-            next(new WrongDataError(err._message));
+          if (isValidationError(err)) {
+            next(new WrongDataError(err.errors.avatar || err.errors.email || 'Validation error'));
           } else if (err?.code === 11000) {
             next(new UserExistsError('User already exists'));
           } else {
@@ -48,7 +49,15 @@ export const signin = (req: Request, res: Response, next: NextFunction) => {
       });
       res.send(user.toObject({ useProjection: true }));
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.statusCode) {
+        next(err);
+      } else if (isCastError(err)) {
+        next(new WrongAuthError('Wrong login or password'));
+      } else {
+        next(new ServerError(err.message));
+      }
+    });
 };
 
 export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
@@ -83,6 +92,8 @@ export const getCurrentUser = (req: Request, res: Response, next: NextFunction) 
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
+      } else if (isCastError(err)) {
+        next(new NotFoundError('User not found'));
       } else {
         next(new ServerError(err.message));
       }
@@ -98,7 +109,6 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
     },
     {
       returnDocument: 'after',
-      runValidators: true,
     },
   ).orFail(new NotFoundError('User not found'))
     .then((user) => {
@@ -107,6 +117,8 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
+      } else if (isCastError(err)) {
+        next(new NotFoundError('User not found'));
       } else {
         next(new ServerError(err.message));
       }
@@ -130,6 +142,10 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
+      } else if (isValidationError(err)) {
+        next(new WrongDataError(err.errors.avatar || 'Validation error'));
+      } else if (isCastError(err)) {
+        next(new NotFoundError('User not found'));
       } else {
         next(new ServerError(err.message));
       }

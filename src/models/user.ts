@@ -35,6 +35,12 @@ const userSchema = new mongoose.Schema<User, UserModel>(
     avatar: {
       type: String,
       required: true,
+      validate: {
+        validator(url: string) {
+          return validator.isURL(url);
+        },
+        message: 'Wrong URL',
+      },
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     },
     email: {

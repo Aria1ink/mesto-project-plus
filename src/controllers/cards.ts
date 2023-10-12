@@ -3,7 +3,7 @@ import NotFoundError from '../constants/errors/NotFoundError';
 import Card from '../models/card';
 import ServerError from '../constants/errors/ServerError';
 import WrongDataError from '../constants/errors/WrongDataError';
-import { isCastError } from '../tools/checkErrors';
+import { isCastError, isValidationError } from '../tools/checkErrors';
 
 export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find({}).limit(50).populate(['owner', 'likes'])
@@ -21,8 +21,10 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
   })
     .then((card) => card.populate(['owner', 'likes']).then((result) => { res.send(result); }))
     .catch((err) => {
-      if (err._message) {
-        next(new WrongDataError(err._message));
+      if (isValidationError(err)) {
+        next(new WrongDataError(err.errors.link || 'Validation error'));
+      } else if (isCastError(err)) {
+        next(new NotFoundError('Card not found'));
       } else {
         next(new ServerError(err.message));
       }
