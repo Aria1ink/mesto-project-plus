@@ -22,9 +22,7 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
     .then((card) => card.populate(['owner', 'likes']).then((result) => { res.send(result); }))
     .catch((err) => {
       if (isValidationError(err)) {
-        next(new WrongDataError(err.errors.link || 'Validation error'));
-      } else if (isCastError(err)) {
-        next(new NotFoundError('Card not found'));
+        next(new WrongDataError(err.errors.link || err.errors.name || 'Validation error'));
       } else {
         next(new ServerError(err.message));
       }
@@ -42,7 +40,7 @@ export const removeCard = (req: Request, res: Response, next: NextFunction) => {
       if (err.statusCode === 404) {
         next(err);
       } else if (isCastError(err)) {
-        next(new NotFoundError('Card not found'));
+        next(new WrongDataError('Wrong card ID'));
       } else {
         next(new ServerError('err.message'));
       }
@@ -63,7 +61,7 @@ export const setLike = (req: Request, res: Response, next: NextFunction) => {
       if (err.statusCode === 404) {
         next(err);
       } else if (isCastError(err)) {
-        next(new NotFoundError('Card not found'));
+        next(new WrongDataError('Wrong card ID'));
       } else {
         next(new ServerError(err.message));
       }
@@ -84,7 +82,7 @@ export const removeLike = (req: Request, res: Response, next: NextFunction) => {
       if (err.statusCode === 404) {
         next(err);
       } else if (isCastError(err)) {
-        next(new NotFoundError('Card not found'));
+        next(new WrongDataError('Wrong card ID'));
       } else {
         next(new ServerError(err.message));
       }

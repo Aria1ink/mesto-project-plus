@@ -52,8 +52,6 @@ export const signin = (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       if (err.statusCode) {
         next(err);
-      } else if (isCastError(err)) {
-        next(new WrongAuthError('Wrong login or password'));
       } else {
         next(new ServerError(err.message));
       }
@@ -77,7 +75,7 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
       if (err.statusCode === 404) {
         next(err);
       } else if (isCastError(err)) {
-        next(new NotFoundError('User not found'));
+        next(new WrongDataError('Wrong user ID'));
       } else {
         next(new ServerError(err.message));
       }
@@ -92,8 +90,6 @@ export const getCurrentUser = (req: Request, res: Response, next: NextFunction) 
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
-      } else if (isCastError(err)) {
-        next(new NotFoundError('User not found'));
       } else {
         next(new ServerError(err.message));
       }
@@ -109,6 +105,7 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
     },
     {
       returnDocument: 'after',
+      runValidators: true,
     },
   ).orFail(new NotFoundError('User not found'))
     .then((user) => {
@@ -117,8 +114,8 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
-      } else if (isCastError(err)) {
-        next(new NotFoundError('User not found'));
+      } else if (isValidationError(err)) {
+        next(new WrongDataError(err.errors.name || err.errors.about || 'Validation error'));
       } else {
         next(new ServerError(err.message));
       }
@@ -144,8 +141,6 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
         next(err);
       } else if (isValidationError(err)) {
         next(new WrongDataError(err.errors.avatar || 'Validation error'));
-      } else if (isCastError(err)) {
-        next(new NotFoundError('User not found'));
       } else {
         next(new ServerError(err.message));
       }
