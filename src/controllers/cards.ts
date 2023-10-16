@@ -30,8 +30,6 @@ export const removeCard = (req: Request, res: Response, next: NextFunction) => {
   const userId = req.user._id;
   const { cardId } = req.params;
 
-  console.log('cardId');
-
   Card.findOneAndDelete({ _id: cardId })
     .orFail(new NotFoundError('Card not found'))
     .then((card) => {
