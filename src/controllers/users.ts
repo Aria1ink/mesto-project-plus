@@ -5,10 +5,8 @@ import NotFoundError from '../constants/errors/NotFoundError';
 import UserExistsError from '../constants/errors/UserExistsError';
 import { settings } from '../constants/settings';
 import User from '../models/user';
-import ServerError from '../constants/errors/ServerError';
 import WrongDataError from '../constants/errors/WrongDataError';
 import { isCastError, isValidationError } from '../tools/checkErrors';
-import WrongAuthError from '../constants/errors/WrongAuthError';
 
 export const signup = (req: Request, res: Response, next: NextFunction) => {
   bcrypt.hash(req.body.password, 10)
@@ -28,13 +26,8 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
             next(new WrongDataError(err.errors.avatar || err.errors.email || 'Validation error'));
           } else if (err?.code === 11000) {
             next(new UserExistsError('User already exists'));
-          } else {
-            next(new ServerError(err.message));
           }
         });
-    })
-    .catch((err) => {
-      next(new ServerError(err.message));
     });
 };
 
@@ -52,8 +45,6 @@ export const signin = (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       if (err.statusCode) {
         next(err);
-      } else {
-        next(new ServerError(err.message));
       }
     });
 };
@@ -62,8 +53,7 @@ export const getAllUsers = (req: Request, res: Response, next: NextFunction) => 
   User.find()
     .then((users) => {
       res.send([...users]);
-    })
-    .catch((err) => next(new ServerError(err.message)));
+    });
 };
 
 export const getUserById = (req: Request, res: Response, next: NextFunction) => {
@@ -76,8 +66,6 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
         next(err);
       } else if (isCastError(err)) {
         next(new WrongDataError('Wrong user ID'));
-      } else {
-        next(new ServerError(err.message));
       }
     });
 };
@@ -90,8 +78,6 @@ export const getCurrentUser = (req: Request, res: Response, next: NextFunction) 
     .catch((err) => {
       if (err.statusCode === 404) {
         next(err);
-      } else {
-        next(new ServerError(err.message));
       }
     });
 };
@@ -116,8 +102,6 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
         next(err);
       } else if (isValidationError(err)) {
         next(new WrongDataError(err.errors.name || err.errors.about || 'Validation error'));
-      } else {
-        next(new ServerError(err.message));
       }
     });
 };
@@ -141,8 +125,6 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
         next(err);
       } else if (isValidationError(err)) {
         next(new WrongDataError(err.errors.avatar || 'Validation error'));
-      } else {
-        next(new ServerError(err.message));
       }
     });
 };

@@ -1,31 +1,26 @@
 import { NextFunction, Response, Request } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import WrongAuthError from '../constants/errors/WrongAuthError';
 import { settings } from '../constants/settings';
 
 const needAuth = (req: Request, res: Response, next: NextFunction) => {
-  let authorization = req.cookies.jwt;
-
-  if (!authorization) {
-    authorization = req.headers?.authorization;
-  }
+  const authorization = req.cookies.jwt || req.headers.authorization;
 
   if (!authorization && !authorization.startsWith('Bearer ')) {
-    throw new WrongAuthError('Auth required');
+    return next(new WrongAuthError('Auth required'));
   }
 
   const token = authorization.replace('Bearer ', '');
   let payload;
 
   try {
-    payload = jwt.verify(token, settings.JWT_SECRET);
+    payload = jwt.verify(token, settings.JWT_SECRET) as JwtPayload;
   } catch (err) {
-    throw new WrongAuthError('Auth required');
+    return next(new WrongAuthError('Auth required'));
   }
+  req.user = { _id: payload?._id };
 
-  req.user = { _id: payload as string };
-
-  next();
+  return next();
 };
 
 export default needAuth;

@@ -10,7 +10,8 @@ const result = require('dotenv').config({ processEnv: settings });
 
 if (result.error || settings.JWT_SECRET === '') {
   console.log('Missing JWT_SECRET in .env file. Temporary secret key generated.');
-  settings.JWT_SECRET = crypto.randomBytes(16).toString('hex');
+  //settings.JWT_SECRET = crypto.randomBytes(16).toString('hex');
+  settings.JWT_SECRET = 'gfdffgdthrstrdsrts';
 }
 
 const app = express();
