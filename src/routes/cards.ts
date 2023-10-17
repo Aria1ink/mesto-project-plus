@@ -14,18 +14,16 @@ import {
   removeLike,
   setLike,
 } from '../controllers/cards';
-import { isCardExists, isUserExists } from '../middlewares/validateId';
 import { urlPattern } from '../constants/settings';
 
 const routerCards = Router();
 
-routerCards.get(urlCards, [needAuth, isUserExists], getCards);
+routerCards.get(urlCards, needAuth, getCards);
 
 routerCards.post(
   urlCards,
   [
     needAuth,
-    isUserExists,
     celebrate({
       body: Joi.object().keys({
         name: Joi.string().min(2).max(30).required(),
@@ -35,11 +33,47 @@ routerCards.post(
   ],
   createCard,
 );
+// vernut'
+routerCards.delete(urlCardId, [
+  needAuth,
+  celebrate({
+    params: Joi.object()
+      .keys({
+        cardId: Joi.string()
+          .regex(/^[0-9a-fA-F]{24}$/)
+          .message('Wrong cardId'),
+      })
+      .unknown(true)
+      .required(),
+  }),
+], removeCard);
 
-routerCards.delete(urlCardId, [needAuth, isUserExists, isCardExists], removeCard);
+routerCards.delete(urlCardSetLike, [
+  needAuth,
+  celebrate({
+    params: Joi.object()
+      .keys({
+        cardId: Joi.string()
+          .regex(/^[0-9a-fA-F]{24}$/)
+          .message('Wrong cardId'),
+      })
+      .unknown(true)
+      .required(),
+  }),
+], removeLike);
 
-routerCards.delete(urlCardLikes, [needAuth, isUserExists, isCardExists], removeLike);
-
-routerCards.put(urlCardSetLike, [needAuth, isUserExists, isCardExists], setLike);
+routerCards.put(urlCardSetLike, [
+  needAuth,
+  celebrate({
+    params: Joi.object()
+      .keys({
+        cardId: Joi.string()
+          .regex(/^[0-9a-fA-F]{24}$/)
+          .message('Wrong cardId'),
+      })
+      .unknown(true)
+      .required(),
+  }),
+], setLike);
 
 export default routerCards;

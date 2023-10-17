@@ -9,7 +9,8 @@ export const getCards = (req: Request, res: Response, next: NextFunction) => {
   Card.find({}).limit(50).populate(['owner', 'likes'])
     .then((cards) => {
       res.send(cards);
-    });
+    })
+    .catch(next);
 };
 
 export const createCard = (req: Request, res: Response, next: NextFunction) => {
@@ -21,30 +22,29 @@ export const createCard = (req: Request, res: Response, next: NextFunction) => {
     .then((card) => card.populate(['owner', 'likes']).then((result) => { res.send(result); }))
     .catch((err) => {
       if (isValidationError(err)) {
-        next(new WrongDataError(err.errors.link || err.errors.name || 'Validation error'));
+        return next(new WrongDataError(err.errors.link || err.errors.name || 'Validation error'));
       }
+      return next(err);
     });
 };
 
 export const removeCard = (req: Request, res: Response, next: NextFunction) => {
-  const userId = req.user._id;
-  const { cardId } = req.params;
-
-  Card.findOneAndDelete({ _id: cardId })
+  const id = req.user._id;
+  Card.findById({ _id: req.params.cardId })
     .orFail(new NotFoundError('Card not found'))
     .then((card) => {
-      if (card.owner.toString() === userId) {
-        res.send({ message: 'Card deleted' });
-      } else {
-        next(new AccessDeniedError('Access denied'));
+      if (card.owner.toString() !== id) {
+        return next(new AccessDeniedError('Access denied'));
       }
+      return card.delete()
+        .then(() => res.send({ message: 'Card deleted' }))
+        .catch(next);
     })
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(err);
-      } else if (isCastError(err)) {
-        next(new WrongDataError('Wrong card ID'));
+      if (isCastError(err)) {
+        return next(new WrongDataError('Wrong card ID'));
       }
+      return next(err);
     });
 };
 
@@ -59,11 +59,10 @@ export const setLike = (req: Request, res: Response, next: NextFunction) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(err);
-      } else if (isCastError(err)) {
-        next(new WrongDataError('Wrong card ID'));
+      if (isCastError(err)) {
+        return next(new WrongDataError('Wrong card ID'));
       }
+      return next(err);
     });
 };
 
@@ -78,10 +77,9 @@ export const removeLike = (req: Request, res: Response, next: NextFunction) => {
       res.send(card);
     })
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(err);
-      } else if (isCastError(err)) {
+      if (isCastError(err)) {
         next(new WrongDataError('Wrong card ID'));
       }
+      next(err);
     });
 };

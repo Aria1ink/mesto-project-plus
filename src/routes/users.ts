@@ -14,22 +14,32 @@ import {
   updateAvatar,
   updateProfile,
 } from '../controllers/users';
-import { isUserExists } from '../middlewares/validateId';
 import { urlPattern } from '../constants/settings';
 
 const routerUsers = Router();
 
-routerUsers.get(urlUserSelf, [needAuth, isUserExists], getCurrentUser);
+routerUsers.get(urlUserSelf, needAuth, getCurrentUser);
 
-routerUsers.get(urlUserId, [needAuth, isUserExists], getUserById);
+routerUsers.get(urlUserId, [
+  needAuth,
+  celebrate({
+    params: Joi.object()
+      .keys({
+        userId: Joi.string()
+          .regex(/^[0-9a-fA-F]{24}$/)
+          .message('Wrong userId'),
+      })
+      .unknown(true)
+      .required(),
+  }),
+], getUserById);
 
-routerUsers.get(urlUsers, [needAuth, isUserExists], getAllUsers);
+routerUsers.get(urlUsers, needAuth, getAllUsers);
 
 routerUsers.patch(
   urlUserAvatar,
   [
     needAuth,
-    isUserExists,
     celebrate({
       body: Joi.object()
         .keys({
@@ -46,7 +56,6 @@ routerUsers.patch(
   urlUsers,
   [
     needAuth,
-    isUserExists,
     celebrate({
       body: Joi.object().keys({
         name: Joi.string().min(2).max(30).required(),

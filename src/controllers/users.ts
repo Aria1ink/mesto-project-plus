@@ -23,10 +23,12 @@ export const signup = (req: Request, res: Response, next: NextFunction) => {
         })
         .catch((err) => {
           if (isValidationError(err)) {
-            next(new WrongDataError(err.errors.avatar || err.errors.email || 'Validation error'));
-          } else if (err?.code === 11000) {
-            next(new UserExistsError('User already exists'));
+            return next(new WrongDataError(err.errors.avatar || err.errors.email || 'Validation error'));
           }
+          if (err?.code === 11000) {
+            return next(new UserExistsError('User already exists'));
+          }
+          return next(err);
         });
     });
 };
@@ -42,18 +44,15 @@ export const signin = (req: Request, res: Response, next: NextFunction) => {
       });
       res.send(user.toObject({ useProjection: true }));
     })
-    .catch((err) => {
-      if (err.statusCode) {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 export const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
   User.find()
     .then((users) => {
       res.send([...users]);
-    });
+    })
+    .catch(next);
 };
 
 export const getUserById = (req: Request, res: Response, next: NextFunction) => {
@@ -62,11 +61,10 @@ export const getUserById = (req: Request, res: Response, next: NextFunction) => 
       res.send(user);
     })
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(err);
-      } else if (isCastError(err)) {
-        next(new WrongDataError('Wrong user ID'));
+      if (isCastError(err)) {
+        return next(new WrongDataError('Wrong user ID'));
       }
+      return next(err);
     });
 };
 
@@ -75,11 +73,7 @@ export const getCurrentUser = (req: Request, res: Response, next: NextFunction) 
     .then((user) => {
       res.send(user);
     })
-    .catch((err) => {
-      if (err.statusCode === 404) {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 export const updateProfile = (req: Request, res: Response, next: NextFunction) => {
@@ -98,11 +92,10 @@ export const updateProfile = (req: Request, res: Response, next: NextFunction) =
       res.send(user);
     })
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(err);
-      } else if (isValidationError(err)) {
-        next(new WrongDataError(err.errors.name || err.errors.about || 'Validation error'));
+      if (isValidationError(err)) {
+        return next(new WrongDataError(err.errors.name || err.errors.about || 'Validation error'));
       }
+      return next(err);
     });
 };
 
@@ -121,10 +114,9 @@ export const updateAvatar = (req: Request, res: Response, next: NextFunction) =>
       res.send(user);
     })
     .catch((err) => {
-      if (err.statusCode === 404) {
-        next(err);
-      } else if (isValidationError(err)) {
-        next(new WrongDataError(err.errors.avatar || 'Validation error'));
+      if (isValidationError(err)) {
+        return next(new WrongDataError(err.errors.avatar || 'Validation error'));
       }
+      return next(err);
     });
 };
