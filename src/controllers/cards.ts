@@ -78,8 +78,8 @@ export const removeLike = (req: Request, res: Response, next: NextFunction) => {
     })
     .catch((err) => {
       if (isCastError(err)) {
-        next(new WrongDataError('Wrong card ID'));
+        return next(new WrongDataError('Wrong card ID'));
       }
-      next(err);
+      return next(err);
     });
 };
